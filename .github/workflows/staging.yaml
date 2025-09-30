@@ -36,6 +36,7 @@ jobs:
 
       - name: Configure kubeconfig
         run: |
+          
           export KUBERNETES_CLUSTER_NAME=${{secrets.KUBERNETES_CLUSTER_NAME}}
           export AWS_REGION=${{secrets.AWS_REGION}}
           aws eks update-kubeconfig --region $AWS_REGION --name $KUBERNETES_CLUSTER_NAME
@@ -50,10 +51,15 @@ jobs:
         run: |
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
           export TOKEN=${{secrets.TOKEN}}
+          export ARGOCD_PASSWORD=${{secrets.ARGOCD_ADMIN_PASSWORD}}
           helm repo add argo https://argoproj.github.io/argo-helm
           helm repo update
-
-          helm upgrade --install argocd argo/argo-cd --namespace feedback --create-namespace
+          ARGOCD_ADMIN_PASSWORD_HASH=$(htpasswd -Bn - <<< "${{secrets.ARGOCD_ADMIN_PASSWORD}}")
+  
+  
+          helm install argocd argo/argo-cd --namespace feedback \
+          --create-namespace \
+          --set configs.secret.argocdServerAdminPassword="${ARGOCD_ADMIN_PASSWORD_HASH}"
 
       - name: Wait for ArgoCD pods
         run: kubectl wait --for=condition=available --timeout=300s deployment -n feedback --all
