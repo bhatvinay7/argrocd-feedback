@@ -49,6 +49,12 @@ jobs:
 
           sudo apt-get update && sudo apt-get install -y git
           git clone --branch $GITOPS_BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$GITOPS_REPO.git  ~/gitops
+          
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/argocd    
       
       - name: Install ArgoCD and Add gitops to ArgoCD
         run: |
@@ -69,11 +75,7 @@ jobs:
       - name: Wait for ArgoCD pods
         run: kubectl wait --for=condition=available --timeout=300s deployment -n feedback --all
 
-      - name: Install ArgoCD CLI
-        run: |
-          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x argocd
-          sudo mv argocd /usr/local/bin/argocd
+      
       
   Deploy :
     environment: staging
