@@ -55,11 +55,7 @@ jobs:
           chmod +x argocd
           sudo mv argocd /usr/local/bin/argocd
 
-      - name: ArgoCD login
-        run: |
-          export ARGOCD_ADMIN_PASSWORD=${{secrets.ARGOCD_ADMIN_PASSWORD}}
-          argocd login localhost:8080 --insecure --username admin --password ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
-
+      
   Deploy :
     environment: staging
     needs: install-argocd
@@ -83,7 +79,13 @@ jobs:
           echo "${{ secrets.KUBECONFIG_CONTENT }}" > kubeconfig
           export KUBECONFIG=$(pwd)/kubeconfig
           kubectl config get-contexts
-
+          
+      - name: ArgoCD login
+        run: |
+          export ARGOCD_ADMIN_PASSWORD=${{secrets.ARGOCD_ADMIN_PASSWORD}}
+          kubectl port-forward svc/argocd-server -n feedback 8080:443 &  sleep 5 
+          argocd login localhost:8080 --insecure --username admin --password ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
+  
       - name: Add gitops to ArgoCD
         run: |
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
