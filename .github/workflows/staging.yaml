@@ -28,6 +28,12 @@ jobs:
           role-to-assume: ${{secrets.ACTION_ROLE}}
           aws-region: ${{secrets.AWS_REGION}}
 
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          kubectl version --client
+
       - name: Configure kubeconfig
         run: |
           export KUBERNETES_CLUSTER_NAME=${{secrets.KUBERNETES_CLUSTER_NAME}}
@@ -39,12 +45,6 @@ jobs:
         run: |
           helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
 
-
-      - name: Install ArgoCD CLI
-        run: |
-          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x argocd
-          sudo mv argocd /usr/local/bin/argocd    
       
       - name: Install ArgoCD and Add gitops to ArgoCD
         run: |
@@ -65,7 +65,13 @@ jobs:
     steps:
       - name: Checkout bootstrap repo
         uses: actions/checkout@v3
-
+      
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          kubectl version --client
+          
       - name : Install CA for AWS eks
         run: |
           sudo apt-get update && sudo apt-get install -y ca-certificates
@@ -83,6 +89,13 @@ jobs:
           aws eks update-kubeconfig --region $AWS_REGION --name $KUBERNETES_CLUSTER_NAME
           kubectl get nodes
           kubectl config get-contexts
+      
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/argocd
+
 
       - name: ArgoCD login
         run: |
