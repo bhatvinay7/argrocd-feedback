@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   install-argocd:
+    environment: staging
     runs-on: ubuntu-latest
     steps:
       - name: Checkout bootstrap repo
@@ -59,7 +60,30 @@ jobs:
           export ARGOCD_ADMIN_PASSWORD=${{secrets.ARGOCD_ADMIN_PASSWORD}}
           argocd login localhost:8080 --insecure --username admin --password ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
 
-      - name: Add Repo B to ArgoCD
+  Deploy :
+    environment: staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout bootstrap repo
+        uses: actions/checkout@v3
+
+      - name : Install CA for AWS eks
+        run: |
+          sudo apt-get update && sudo apt-get install -y ca-certificates
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{secrets.ACTION_ROLE}}
+          aws-region: ${{secrets.AWS_REGION}}
+
+      - name: Configure kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" > kubeconfig
+          export KUBECONFIG=$(pwd)/kubeconfig
+          kubectl config get-contexts
+
+      - name: Add gitops to ArgoCD
         run: |
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
           export TOKEN=${{secrets.TOKEN}}
@@ -78,10 +102,13 @@ jobs:
           sudo apt-get update && sudo apt-get install -y 
           git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MENIFEST_REPO.git  ~/agrocd 
             
-      - name: Apply Repo C Applications
+      - name: kubectl apply run applications
         run: | 
           cd  ~/agrocd 
           kubectl apply -f applications/feedback.ingress.staging.yaml
+          kubectl wait --for=condition=ready --timeout=300s -n ingress-nginx deployment/nginx-ingress-controller
           kubectl apply -f applications/feedback.certmanager.staging.yaml
           kubectl apply -f applications/feedback.kafka-cluster.staging.yaml
+          kubectl wait kafka/kafka-prod --for=condition=Ready --timeout=300s -n kafka
           kubectl apply -f applications/feedback.services.staging.yaml
+
