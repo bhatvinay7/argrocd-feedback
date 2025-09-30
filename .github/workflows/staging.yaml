@@ -105,15 +105,22 @@ jobs:
           export GITOPS_URL=${{secrets.GITOPS_URL}}
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
           export TOKEN=${{secrets.TOKEN}}
-          kubectl patch secret argocd-secret -n feedback -p '{"data": {"admin.password": null, "admin.passwordMtime": null}}'
-          kubectl rollout restart deployment argocd-server -n feedback
-          kubectl -n feedback get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-          kubectl port-forward svc/argocd-server -n feedback 8080:443 &  sleep 5 
-          export ARGOCD_OPTS='--port-forward-namespace feedback'
-          ARGOCD_NAMESPACE="feedback"
-          INITIAL_PASSWORD=$(kubectl -n "$ARGOCD_NAMESPACE" get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-          argocd login localhost:8080 --insecure --username admin --password $INITIAL_PASSWORD
 
+          kubectl patch secret argocd-secret -n feedback -p '{"data": {"admin.password": null, "admin.passwordMtime": null}}'
+
+          kubectl rollout restart deployment argocd-server -n feedback
+
+          kubectl -n feedback get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+          kubectl port-forward svc/argocd-server -n feedback 8080:443 &  sleep 5 
+
+          export ARGOCD_OPTS='--port-forward-namespace feedback'
+
+          ARGOCD_NAMESPACE="feedback"
+
+          INITIAL_PASSWORD=$(kubectl -n "$ARGOCD_NAMESPACE" get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+
+          argocd login localhost:8080 --insecure --username admin --password $INITIAL_PASSWORD
 
           argocd repo add  $GITOPS_URL \
             --username $DOCKER_USERNAME \
@@ -126,13 +133,13 @@ jobs:
           export TOKEN=${{secrets.TOKEN}}
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
  
-          mkdir -p ~/agrocd 
+          mkdir -p ~/argocd 
           sudo apt-get update && sudo apt-get install -y git
-          git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MENIFEST_REPO.git  ~/agrocd 
+          git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MENIFEST_REPO.git  ~/argocd 
             
       - name: kubectl apply run applications
         run: | 
-          cd  ~/agrocd 
+          cd  ~/arrocd 
           kubectl apply -f applications/feedback.ingress.staging.yaml -n feedback
           kubectl wait --for=condition=ready --timeout=300s -n ingress-nginx deployment/nginx-ingress-controller 
           kubectl apply -f applications/feedback.certmanager.staging.yaml -n feedback
