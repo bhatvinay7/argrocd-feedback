@@ -54,7 +54,7 @@ jobs:
           export ARGOCD_PASSWORD=${{secrets.ARGOCD_ADMIN_PASSWORD}}
           helm repo add argo https://argoproj.github.io/argo-helm
           helm repo update
-          ARGOCD_ADMIN_PASSWORD_HASH=$(htpasswd -Bn -i <<< "${{secrets.ARGOCD_ADMIN_PASSWORD}}")
+          ARGOCD_ADMIN_PASSWORD_HASH=$(htpasswd -Bn -i - <<< "${{secrets.ARGOCD_ADMIN_PASSWORD}}")
   
           helm install argocd argo/argo-cd --namespace feedback \
           --create-namespace \
