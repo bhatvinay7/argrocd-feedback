@@ -139,7 +139,7 @@ jobs:
             
       - name: kubectl apply run applications
         run: | 
-          cd  ~/arrocd 
+          cd  ~/argocd 
           kubectl apply -f applications/feedback.ingress.staging.yaml -n feedback
           kubectl wait --for=condition=ready --timeout=300s -n ingress-nginx deployment/nginx-ingress-controller 
           kubectl apply -f applications/feedback.certmanager.staging.yaml -n feedback
