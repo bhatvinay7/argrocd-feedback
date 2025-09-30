@@ -105,7 +105,7 @@ jobs:
           export TOKEN=${{secrets.TOKEN}}
           kubectl port-forward svc/argocd-server -n feedback 8080:443 &  sleep 5 
           export ARGOCD_OPTS='--port-forward-namespace feedback'
-          argocd login localhost:8080 --insecure --username admin --password $ARGOCD_ADMIN_PASSWORD --namespace feedback
+          argocd login localhost:8080 --insecure --username admin --password $ARGOCD_ADMIN_PASSWORD
           
           argocd repo add  $GITOPS_URL \
             --username $DOCKER_USERNAME \
