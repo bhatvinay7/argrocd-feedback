@@ -53,7 +53,7 @@ jobs:
           helm repo add argo https://argoproj.github.io/argo-helm
           helm repo update
 
-          helm upgrade --install argocd argo/argo-cd
+          helm upgrade --install argocd argo/argo-cd --namespace feedback --create-namespace
           argocd repo add  $GITOPS_URL \
             --username ${{ secrets.DOCKER_USERNAME }} \
             --password ${{ secrets.TOKEN }}
