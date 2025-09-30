@@ -41,8 +41,8 @@ jobs:
 
       - name : pull gitops repo
         run: |
-          export GITOPS_BRANCH=${{secrets.BRANCH}}
-          export GITOPS_REPO=${{secrets.MENIFEST_REPO}}
+          export GITOPS_BRANCH=${{secrets.GITOPS_BRANCH}}
+          export GITOPS_REPO=${{secrets.GITOPS_REPO}}
           export TOKEN=${{secrets.TOKEN}}
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
           mkdir -p ~/gitops 
