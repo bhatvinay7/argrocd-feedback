@@ -54,10 +54,6 @@ jobs:
           helm repo update
 
           helm upgrade --install argocd argo/argo-cd --namespace feedback --create-namespace
-          argocd repo add  $GITOPS_URL \
-            --username ${{ secrets.DOCKER_USERNAME }} \
-            --password ${{ secrets.TOKEN }}
-
 
       - name: Wait for ArgoCD pods
         run: kubectl wait --for=condition=available --timeout=300s deployment -n feedback --all
@@ -92,8 +88,11 @@ jobs:
         run: |
           export ARGOCD_ADMIN_PASSWORD=${{secrets.ARGOCD_ADMIN_PASSWORD}}
           kubectl port-forward svc/argocd-server -n feedback 8080:443 &  sleep 5 
-          argocd login localhost:8080 --insecure --username admin --password ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
-  
+          argocd login localhost:8080 --insecure --username admin --password ${{ secrets.ARGOCD_ADMIN_PASSWORD }} --namespace feedback
+          
+          argocd repo add  $GITOPS_URL \
+            --username ${{ secrets.DOCKER_USERNAME }} \
+            --password ${{ secrets.TOKEN }}
 
       - name : pull application.yaml file
         run: |
@@ -109,10 +108,9 @@ jobs:
       - name: kubectl apply run applications
         run: | 
           cd  ~/agrocd 
-          kubectl apply -f applications/feedback.ingress.staging.yaml
-          kubectl wait --for=condition=ready --timeout=300s -n ingress-nginx deployment/nginx-ingress-controller
-          kubectl apply -f applications/feedback.certmanager.staging.yaml
-          kubectl apply -f applications/feedback.kafka-cluster.staging.yaml
+          kubectl apply -f applications/feedback.ingress.staging.yaml -n feedback
+          kubectl wait --for=condition=ready --timeout=300s -n ingress-nginx deployment/nginx-ingress-controller 
+          kubectl apply -f applications/feedback.certmanager.staging.yaml -n feedback
+          kubectl apply -f applications/feedback.kafka-cluster.staging.yaml -n feedback
           kubectl wait kafka/kafka-prod --for=condition=Ready --timeout=300s -n kafka
-          kubectl apply -f applications/feedback.services.staging.yaml
-
+          kubectl apply -f applications/feedback.services.staging.yaml -n feedback
