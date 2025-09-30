@@ -85,17 +85,6 @@ jobs:
           role-to-assume: ${{secrets.ACTION_ROLE}}
           aws-region: ${{secrets.AWS_REGION}}
 
-      - name : pull application.yaml file
-        run: |
-          export BRANCH=${{secrets.BRANCH}}
-          export MANIFEST_REPO=${{secrets.MANIFEST_REPO}}
-          export TOKEN=${{secrets.TOKEN}}
-          export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
- 
-          sudo apt-get update && sudo apt-get install -y git
-          mkdir -p ~/argocd
-          git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MANIFEST_REPO.git  ~/argocd     
-
       - name: Configure kubeconfig
         run: |
           export KUBERNETES_CLUSTER_NAME=${{secrets.KUBERNETES_CLUSTER_NAME}}
@@ -135,8 +124,18 @@ jobs:
 
           argocd repo add  $GITOPS_URL \
             --username $DOCKER_USERNAME \
-            --password $TOKEN
+            --password $TOKEN --upsert
 
+      - name : pull application.yaml file
+        run: |
+          export BRANCH=${{secrets.BRANCH}}
+          export MANIFEST_REPO=${{secrets.MANIFEST_REPO}}
+          export TOKEN=${{secrets.TOKEN}}
+          export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
+ 
+          sudo apt-get update && sudo apt-get install -y git
+          mkdir -p ~/argocd
+          git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MANIFEST_REPO.git  ~/argocd     
      
             
       - name: kubectl apply run applications
