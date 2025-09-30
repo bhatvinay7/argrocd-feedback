@@ -142,7 +142,7 @@ jobs:
         run: | 
           cd  ~/argocd 
           kubectl apply -f applications/feedback.ingress.staging.yaml -n feedback
-          kubectl wait --for=condition=ready --timeout=300s -n ingress-nginx deployment/nginx-ingress-controller 
+          kubectl wait --for=condition=ready --timeout=300s -n ingress-nginx -l app=nginx-ingress deployment
           kubectl apply -f applications/feedback.certmanager.staging.yaml -n feedback
           kubectl apply -f applications/feedback.kafka-cluster.staging.yaml -n feedback
           kubectl wait kafka/kafka-prod --for=condition=Ready --timeout=300s -n kafka
