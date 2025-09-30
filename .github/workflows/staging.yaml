@@ -59,7 +59,7 @@ jobs:
 
           helm upgrade --install argocd argo/argo-cd \
             --namespace feedback --create-namespace \
-            -f ~/gitops/Helm/chart.staging/services/values.prod.yaml
+            -f ~/gitops/Helm/chart.staging/services/values.prod.yml
             
           argocd repo add  $GITOPS_URL \
             --username ${{ secrets.DOCKER_USERNAME }} \
