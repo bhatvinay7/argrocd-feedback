@@ -55,11 +55,13 @@ jobs:
           helm repo add argo https://argoproj.github.io/argo-helm
           helm repo update
           ARGOCD_ADMIN_PASSWORD_HASH=$(printf "%s" "${{secrets.ARGOCD_ADMIN_PASSWORD}}" | htpasswd -Bn -i -)
-          
+
           helm uninstall argocd --namespace feedback --ignore-not-found
           helm install argocd argo/argo-cd --namespace feedback \
-          --create-namespace \
-          --set configs.secret.argocdServerAdminPassword="${ARGOCD_ADMIN_PASSWORD_HASH}"
+          --create-namespace
+
+          NEW_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ" | base64 -w 0)
+          kubectl patch secret argocd-secret -n feedback -p "{\"data\": {\"admin.password\": \"$ARGOCD_ADMIN_PASSWORD_HASH\", \"admin.passwordMtime\": \"$NEW_TIMESTAMP\"}}"
 
       - name: Wait for ArgoCD pods
         run: kubectl wait --for=condition=available --timeout=300s deployment -n feedback --all
@@ -102,17 +104,18 @@ jobs:
           chmod +x argocd
           sudo mv argocd /usr/local/bin/argocd
 
-
       - name: ArgoCD login
         run: |
-          export ARGOCD_ADMIN_PASSWORD=${{secrets.ARGOCD_ADMIN_PASSWORD}}
+          export ARGOCD_ADMIN_PASSWORD=$(printf "%s" "${{secrets.ARGOCD_ADMIN_PASSWORD}}" | htpasswd -Bn -i -)
           export GITOPS_URL=${{secrets.GITOPS_URL}}
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
           export TOKEN=${{secrets.TOKEN}}
           kubectl port-forward svc/argocd-server -n feedback 8080:443 &  sleep 5 
           export ARGOCD_OPTS='--port-forward-namespace feedback'
-          argocd login localhost:8080 --insecure --username admin --password $ARGOCD_ADMIN_PASSWORD
           
+          argocd login localhost:8080 --insecure --username admin --password $ARGOCD_ADMIN_PASSWORD
+
+
           argocd repo add  $GITOPS_URL \
             --username $DOCKER_USERNAME \
             --password $TOKEN
@@ -123,8 +126,8 @@ jobs:
           export MENIFEST_REPO=${{secrets.MENIFEST_REPO}}
           export TOKEN=${{secrets.TOKEN}}
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
-          mkdir -p ~/agrocd 
 
+          mkdir -p ~/agrocd 
           sudo apt-get update && sudo apt-get install -y git
           git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MENIFEST_REPO.git  ~/agrocd 
             
