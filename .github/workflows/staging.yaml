@@ -30,6 +30,8 @@ jobs:
 
       - name: Configure kubeconfig
         run: |
+          export KUBERNETES_CLUSTER_NAME=${{secrets.KUBERNETES_CLUSTER_NAME}}
+          export AWS_REGION=${{secrets.AWS_REGION}}
           aws eks update-kubeconfig --region $AWS_REGION --name $KUBERNETES_CLUSTER_NAME
           kubectl get nodes
 
@@ -93,6 +95,8 @@ jobs:
 
       - name: Configure kubeconfig
         run: |
+          export KUBERNETES_CLUSTER_NAME=${{secrets.KUBERNETES_CLUSTER_NAME}}
+          export AWS_REGION=${{secrets.AWS_REGION}}
           aws eks update-kubeconfig --region $AWS_REGION --name $KUBERNETES_CLUSTER_NAME
           kubectl get nodes
           kubectl config get-contexts
