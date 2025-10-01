@@ -135,7 +135,14 @@ jobs:
       #     ORGS_NAME=${{secrets.DOCKER_USERNAME}}
       #   run: |
       #     bash scripts/create-secrets.sh 
-     
+      - name : Add metric argocd-server
+        run : |
+            helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+            helm upgrade --install metrics-server metrics-server/metrics-server \
+            --namespace kube-system \
+            --set image.repository=registry.k8s.io/metrics-server/metrics-server \
+            --set image.tag=v0.7.2
+
 
       - name: ArgoCD login
         run: |
