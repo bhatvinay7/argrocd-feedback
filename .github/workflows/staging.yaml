@@ -182,7 +182,11 @@ jobs:
           mkdir -p ~/argocd
           git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MANIFEST_REPO.git  ~/argocd     
      
-            
+      - name : Install helm charts
+        run: |
+           helm repo add bitnami https://charts.bitnami.com/bitnami
+           helm repo update
+
       - name: kubectl apply run applications
         run: | 
           cd  ~/argocd
