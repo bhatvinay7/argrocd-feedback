@@ -189,10 +189,10 @@ jobs:
 
       - name: add argocd sync
         run: | 
-          argocd app sync cert-manager --namespace feedback
-          argocd app sync kafka-cluster --namespace feedback
-          argocd app sync ingress --namespace feedback
-          argocd app sync services.staging --namespace feedback
+          argocd app sync cert-manager
+          argocd app sync kafka-cluster
+          argocd app sync ingress
+          argocd app sync services.staging
 
 
 
