@@ -195,6 +195,5 @@ jobs:
           kubectl apply -f applications/manifest/feedback.ingress.staging.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.certmanager.staging.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.kafka-cluster.staging.yaml -n feedback
-          kubectl apply -f applications/manifest/feedback.services.staging.yaml -n feedback
 
 
