@@ -163,6 +163,7 @@ jobs:
           argocd repo add  $GITOPS_URL \
             --username $DOCKER_USERNAME \
             --password $TOKEN --upsert
+  
 
       - name : pull application.yaml file
         run: |
@@ -185,3 +186,11 @@ jobs:
           kubectl apply -f applications/manifest/feedback.certmanager.staging.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.kafka-cluster.staging.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.services.staging.yaml -n feedback
+          
+          argocd app sync cert-manager --namespace feedback
+          argocd app sync kafka-service --namespace feedback
+          argocd app sync ingress --namespace feedback
+          argocd app sync services.staging --namespace feedback
+
+
+
