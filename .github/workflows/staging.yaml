@@ -179,8 +179,8 @@ jobs:
       - name: kubectl apply run applications
         run: | 
           cd  ~/argocd
-          kubectl apply -f applications/project/feedback.service.app.yaml -n feedback
-          kubectl apply -f applications/project/feedback.kafka-cluster.app.yaml -n feedback
+          kubectl apply -f applications/project/feedback-service.app.yaml -n feedback
+          kubectl apply -f applications/project/feedback-kafka-cluster.app.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.ingress.staging.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.certmanager.staging.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.kafka-cluster.staging.yaml -n feedback
