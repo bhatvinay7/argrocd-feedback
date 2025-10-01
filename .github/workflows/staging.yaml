@@ -187,12 +187,4 @@ jobs:
           kubectl apply -f applications/manifest/feedback.kafka-cluster.staging.yaml -n feedback
           kubectl apply -f applications/manifest/feedback.services.staging.yaml -n feedback
 
-      - name: add argocd sync
-        run: | 
-          argocd app sync cert-manager
-          argocd app sync kafka-cluster
-          argocd app sync ingress
-          argocd app sync services.staging
-
-
 
