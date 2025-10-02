@@ -190,10 +190,20 @@ jobs:
       - name: kubectl apply run applications
         run: | 
           cd  ~/argocd
-          kubectl apply -f applications/project/feedback-service.app.yaml -n feedback
           kubectl apply -f applications/project/kafka-cluster.app.yaml -n feedback
-          kubectl apply -f applications/manifest/feedback.ingress.staging.yaml -n feedback
-          kubectl apply -f applications/manifest/feedback.certmanager.staging.yaml -n feedback
+          kubectl apply -f applications/project/reach-frontend.app.yaml -n feedback
+          kubectl apply -f applications/project/reach-backend.app.yaml -n feedback
+          kubectl apply -f applications/project/reach-ws-server.app.yaml -n feedback
+          kubectl apply -f applications/project/reach-consumer1.app.yaml -n feedback
+          kubectl apply -f applications/project/reach-consumer2.app.yaml -n feedback 
+          kubectl apply -f applications/project/ingress.app.yaml -n feedback
+
           kubectl apply -f applications/manifest/feedback.kafka-cluster.staging.yaml -n feedback
+          kubectl apply -f applications/manifest/reach-frontend.staging.yaml -n feedback
+          kubectl apply -f applications/manifest/reach-backend.staging.yaml -n feedback
+          kubectl apply -f applications/manifest/reach-ws-server.staging.yaml -n feedback
+          kubectl apply -f applications/manifest/reach-consumer1.staging.yaml -n feedback
+          kubectl apply -f applications/manifest/reach-consumer2.staging.yaml -n feedback
+          kubectl apply -f applications/manifest/feedback.ingress.staging.yaml -n feedback
 
 
