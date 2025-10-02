@@ -60,8 +60,8 @@ jobs:
           echo "ArgoCD already installed in namespace argocd"
           fi
 
-      - name: Wait for ArgoCD pods
-        run: kubectl wait --for=condition=available --timeout=300s deployment -n argocd --all
+      # - name: Wait for ArgoCD pods
+      #   run: kubectl wait --for=condition=available --timeout=300s deployment -n argocd --all
       
   Deploy :
     environment: staging
