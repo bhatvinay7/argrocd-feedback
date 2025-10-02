@@ -209,9 +209,9 @@ jobs:
           # kubectl apply -f applications/manifest/reach-consumer2.staging.yaml -n feedback
           # kubectl apply -f applications/manifest/feedback.ingress.staging.yaml -n feedback
           
-          kubectl rollout restart deployment --all -n feedback
-          kubectl rollout restart deployment --all -n feedback-services
-          kubectl rollout restart deployment --all -n kafka
+          kubectl rollout restart deployment  -n feedback
+          kubectl rollout restart deployment  -n feedback-services
+          kubectl rollout restart deployment  -n kafka
 
 
 
