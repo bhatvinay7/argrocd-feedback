@@ -192,6 +192,7 @@ jobs:
       - name: kubectl apply run applications
         run: | 
           cd  ~/argocd
+          
           kubectl apply -f applications/project/secrets.app.yaml -n argocd
           kubectl apply -f applications/manifest/secrets.yaml -n argocd
           kubectl apply -f applications/project/kafka-cluster.app.yaml -n argocd
